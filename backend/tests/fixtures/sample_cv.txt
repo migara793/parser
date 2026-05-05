@@ -1,0 +1,40 @@
+Jane A. Doe
+Senior Backend Engineer
+San Francisco, CA · jane.doe@example.com · +1 (555) 010-2233
+LinkedIn: https://linkedin.com/in/janedoe
+GitHub:   https://github.com/janedoe
+
+SUMMARY
+Backend engineer with 8+ years of experience building distributed systems,
+payment platforms, and data infrastructure at scale.
+
+EXPERIENCE
+
+Senior Backend Engineer — Acme Pay
+2022-03 — Present, San Francisco, CA
+- Led migration from monolith to event-driven services on Kafka.
+- Reduced p99 checkout latency by 38% via async settlement pipeline.
+- Mentored 4 mid-level engineers.
+
+Backend Engineer — Globex
+2018-06 — 2022-02, Remote
+- Designed billing engine handling $50M GMV/year.
+- Owned PostgreSQL sharding strategy and rollout.
+
+Software Engineer — Initech
+2016-08 — 2018-05, Austin, TX
+- Built internal tooling, REST APIs, and on-call automation.
+
+EDUCATION
+B.Sc. Computer Science — University of Texas at Austin, 2012-08 — 2016-05.
+
+SKILLS
+Languages: Python, Go, TypeScript
+Frameworks: FastAPI, Django, Next.js
+Tools: Kafka, PostgreSQL, Kubernetes, Terraform
+
+CERTIFICATIONS
+AWS Certified Solutions Architect — Associate, 2023-04.
+
+LANGUAGES
+English (native), Spanish (professional).
