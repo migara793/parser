@@ -77,7 +77,7 @@ export function ConfigurePage({ onResult }: Props) {
               size="small"
               color={file ? "success" : "default"}
               variant={file ? "filled" : "outlined"}
-              label={file ? "File selected" : "Waiting for upload"}
+              label={file ? "File selected" : "Awaiting your resume"}
             />
           </div>
           <ResumeDropzone file={file} onFile={setFile} />
@@ -93,7 +93,7 @@ export function ConfigurePage({ onResult }: Props) {
                 Fields to extract
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Toggle the structured information you want from each resume.
+                Choose the fields you want to extract from each resume.
               </Typography>
             </div>
             <Chip
@@ -134,10 +134,10 @@ export function ConfigurePage({ onResult }: Props) {
                 variant="overline"
                 className="!font-bold !tracking-[0.2em] text-brand-700"
               >
-                Live summary
+                Setup summary
               </Typography>
               <Typography variant="h6" className="!font-bold">
-                Ready to parse
+                Ready to go
               </Typography>
             </div>
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-500 text-white shadow-lg shadow-orange-500/20">
@@ -210,8 +210,8 @@ export function ConfigurePage({ onResult }: Props) {
                 {parseM.isPending ? "Extracting…" : "Parse resume"}
               </Button>
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-800 transition-colors dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-200">
-                Use the sidebar to keep the CTA visible on desktop; the whole
-                layout stacks cleanly on mobile.
+                The action stays visible on desktop and the layout adapts on
+                smaller screens.
               </div>
             </Stack>
           </div>
