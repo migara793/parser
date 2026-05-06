@@ -78,7 +78,7 @@ export default function App() {
                     <Chip
                       size="small"
                       icon={<ShieldCheck className="h-3.5 w-3.5" />}
-                      label="Gemini powered"
+                      label="AI assisted"
                       color="success"
                       variant="filled"
                       className="!bg-emerald-500 !text-white"
@@ -89,9 +89,8 @@ export default function App() {
                     color="text.secondary"
                     className="max-w-2xl"
                   >
-                    A polished, recruiter-focused workspace for configuring
-                    resume fields, uploading a file, and reviewing structured
-                    extraction output.
+                    A polished workspace for configuring resume fields,
+                    uploading a file, and reviewing the extracted profile.
                   </Typography>
                 </div>
               </div>
@@ -100,15 +99,15 @@ export default function App() {
                 <div className="grid gap-2 sm:grid-cols-3">
                   <div className="rounded-2xl border border-brand-100 bg-brand-50/80 px-4 py-3 transition-colors dark:border-slate-700 dark:bg-slate-900/80">
                     <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-200">
-                      <Sparkles className="h-3.5 w-3.5" /> Tuned UI
+                      <Sparkles className="h-3.5 w-3.5" /> Polished
                     </div>
                     <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                      Tailwind + MUI
+                      Clean and refined
                     </div>
                   </div>
                   <div className="rounded-2xl border border-emerald-100 bg-emerald-50/80 px-4 py-3 transition-colors dark:border-slate-700 dark:bg-slate-900/80">
                     <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-200">
-                      <Zap className="h-3.5 w-3.5" /> Responsive
+                      <Zap className="h-3.5 w-3.5" /> Works anywhere
                     </div>
                     <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                       Mobile-first layout
@@ -116,10 +115,10 @@ export default function App() {
                   </div>
                   <div className="rounded-2xl border border-amber-100 bg-amber-50/80 px-4 py-3 transition-colors dark:border-slate-700 dark:bg-slate-900/80">
                     <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-200">
-                      <ShieldCheck className="h-3.5 w-3.5" /> Clean output
+                      <ShieldCheck className="h-3.5 w-3.5" /> Easy review
                     </div>
                     <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                      Pretty + raw JSON
+                      Structured and clear
                     </div>
                   </div>
                 </div>
@@ -170,7 +169,7 @@ export default function App() {
           </main>
 
           <footer className="pb-4 text-center text-xs font-medium text-slate-500 transition-colors dark:text-slate-400">
-            Resume Parser · FastAPI + unstructured + Gemini · React + Vite
+            Resume Parser · AI resume extraction for recruiters
           </footer>
         </Container>
       </Box>
