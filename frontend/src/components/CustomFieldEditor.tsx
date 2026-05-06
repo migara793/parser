@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { Button, Chip, Paper, TextField, useTheme } from "@mui/material";
 import { useProfileStore } from "../store/profile";
 import type { CustomField, CustomFieldType } from "../types";
 
@@ -17,6 +18,8 @@ export function CustomFieldEditor() {
   const addCustomField = useProfileStore((s) => s.addCustomField);
   const updateCustomField = useProfileStore((s) => s.updateCustomField);
   const removeCustomField = useProfileStore((s) => s.removeCustomField);
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   const [draft, setDraft] = useState<CustomField>({
     key: "",
@@ -45,23 +48,40 @@ export function CustomFieldEditor() {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h3 className="text-base font-semibold">Custom fields</h3>
-      <p className="mb-3 text-sm text-slate-500">
-        Add your own fields. The description is what the AI uses to find the
-        value — be specific. Example: <em>"Years of AWS experience as a
-        number, or null if not mentioned."</em>
-      </p>
+    <Paper
+      elevation={0}
+      className="rounded-[28px] border border-white/70 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] transition-colors dark:border-slate-700/60 dark:bg-slate-900/75 dark:shadow-[0_20px_60px_rgba(2,6,23,0.35)]"
+    >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            Custom fields
+          </h3>
+          <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+            Add your own fields. The description is what the AI uses to find the
+            value — be specific. Example:{" "}
+            <em>
+              "Years of AWS experience as a number, or null if not mentioned."
+            </em>
+          </p>
+        </div>
+        <Chip
+          size="small"
+          label={`${profile.custom_fields.length} custom fields`}
+          variant="outlined"
+          color="primary"
+        />
+      </div>
 
-      <div className="grid grid-cols-1 gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-3">
         {profile.custom_fields.map((cf) => (
           <div
             key={cf.key}
-            className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3 md:flex-row md:items-start"
+            className="flex flex-col gap-3 rounded-[22px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 md:flex-row md:items-start dark:border-slate-700 dark:from-slate-950/60 dark:to-slate-900"
           >
             <div className="flex flex-col gap-2 md:flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <code className="rounded bg-white px-2 py-1 text-xs font-medium text-brand-700 ring-1 ring-slate-200">
+                <code className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 ring-1 ring-brand-100 dark:bg-brand-950/50 dark:text-brand-200 dark:ring-brand-900/60">
                   {cf.key}
                 </code>
                 <select
@@ -71,7 +91,7 @@ export function CustomFieldEditor() {
                       type: e.target.value as CustomFieldType,
                     })
                   }
-                  className="rounded border border-slate-300 px-2 py-1 text-xs"
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs shadow-sm outline-none dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100"
                 >
                   {TYPES.map((t) => (
                     <option key={t} value={t}>
@@ -79,7 +99,7 @@ export function CustomFieldEditor() {
                     </option>
                   ))}
                 </select>
-                <label className="ml-auto inline-flex items-center gap-1 text-xs text-slate-600">
+                <label className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
                   <input
                     type="checkbox"
                     className="h-3.5 w-3.5 accent-brand-500"
@@ -98,16 +118,16 @@ export function CustomFieldEditor() {
                 onChange={(e) =>
                   updateCustomField(cf.key, { description: e.target.value })
                 }
-                className="w-full rounded border border-slate-300 px-2 py-1 text-sm"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-brand-400 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100"
               />
-              <div className="text-right text-[11px] text-slate-400">
+              <div className="text-right text-[11px] text-slate-400 dark:text-slate-500">
                 {cf.description.length}/500
               </div>
             </div>
             <button
               type="button"
               onClick={() => removeCustomField(cf.key)}
-              className="self-start rounded p-2 text-slate-400 hover:bg-red-50 hover:text-red-600"
+              className="self-start rounded-xl p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"
               aria-label="Remove custom field"
             >
               <Trash2 className="h-4 w-4" />
@@ -116,20 +136,35 @@ export function CustomFieldEditor() {
         ))}
       </div>
 
-      <div className="mt-4 rounded-lg border border-dashed border-slate-300 p-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <input
+      <div className="mt-4 rounded-[22px] border border-dashed border-brand-200 bg-brand-50/30 p-4 dark:border-slate-700 dark:bg-slate-950/80">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+          <TextField
             placeholder="key (snake_case)"
             value={draft.key}
             onChange={(e) => setDraft({ ...draft, key: e.target.value })}
-            className="w-48 rounded border border-slate-300 px-2 py-1 text-sm"
+            size="small"
+            className="lg:w-56"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 999,
+                backgroundColor: isDark ? "rgba(2, 6, 23, 0.72)" : "#ffffff",
+                color: isDark ? "#e2e8f0" : "#0f172a",
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: isDark ? "#334155" : "#e2e8f0",
+              },
+              "& .MuiInputBase-input::placeholder": {
+                opacity: 1,
+                color: isDark ? "#94a3b8" : "#64748b",
+              },
+            }}
           />
           <select
             value={draft.type}
             onChange={(e) =>
               setDraft({ ...draft, type: e.target.value as CustomFieldType })
             }
-            className="rounded border border-slate-300 px-2 py-1 text-sm"
+            className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none lg:w-44 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100"
           >
             {TYPES.map((t) => (
               <option key={t} value={t}>
@@ -137,7 +172,7 @@ export function CustomFieldEditor() {
               </option>
             ))}
           </select>
-          <label className="inline-flex items-center gap-1 text-xs text-slate-600">
+          <label className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
             <input
               type="checkbox"
               className="h-3.5 w-3.5 accent-brand-500"
@@ -148,13 +183,27 @@ export function CustomFieldEditor() {
             />
             Required
           </label>
-          <button
+          <Button
             type="button"
             onClick={tryAdd}
-            className="ml-auto inline-flex items-center gap-1 rounded bg-brand-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-600"
+            variant="contained"
+            color="primary"
+            startIcon={<Plus className="h-4 w-4" />}
+            sx={{
+              ml: "auto",
+              borderRadius: 999,
+              fontWeight: 700,
+              background: "linear-gradient(90deg, #f97316 0%, #16a34a 100%)",
+              color: "#fff",
+              boxShadow: "none",
+              "&:hover": {
+                background: "linear-gradient(90deg, #ea580c 0%, #15803d 100%)",
+                boxShadow: "none",
+              },
+            }}
           >
-            <Plus className="h-4 w-4" /> Add
-          </button>
+            Add
+          </Button>
         </div>
         <textarea
           rows={2}
@@ -162,10 +211,14 @@ export function CustomFieldEditor() {
           placeholder="Plain-English description of what to extract…"
           value={draft.description}
           onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-          className="mt-2 w-full rounded border border-slate-300 px-2 py-1 text-sm"
+          className="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-brand-400 dark:border-slate-700 dark:bg-slate-950/70 dark:text-slate-100"
         />
-        {error && <div className="mt-2 text-xs text-red-600">{error}</div>}
+        {error && (
+          <div className="mt-2 text-xs text-red-600 dark:text-red-300">
+            {error}
+          </div>
+        )}
       </div>
-    </div>
+    </Paper>
   );
 }

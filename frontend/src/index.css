@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,6 +8,39 @@ html,
 body,
 #root {
   height: 100%;
+}
+
+html {
+  --app-page-bg: #fff7ed;
+  --app-page-fg: #0f172a;
+  background: var(--app-page-bg);
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  --app-page-bg: #020617;
+  --app-page-fg: #f8fafc;
+}
+
+body {
+  margin: 0;
+  background: var(--app-page-bg);
+  color: var(--app-page-fg);
+  font-family: "Sora", "Inter", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background 220ms ease,
+    color 220ms ease;
+}
+
+#root {
+  background: var(--app-page-bg);
+}
+
+::selection {
+  background: rgba(249, 115, 22, 0.2);
+  color: #0f172a;
 }
 
 button,
