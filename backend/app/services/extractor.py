@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any, Optional
 
 from pydantic import BaseModel, ValidationError
@@ -49,11 +50,34 @@ def _extract_json_text(response: Any) -> Optional[str]:
     return None
 
 
+def _log_usage(request_id: str, attempt: str, response: Any) -> None:
+    usage = getattr(response, "usage_metadata", None)
+    if not usage:
+        return
+    prompt_tok = getattr(usage, "prompt_token_count", None)
+    out_tok = getattr(usage, "candidates_token_count", None)
+    total = getattr(usage, "total_token_count", None)
+    finish = None
+    candidates = getattr(response, "candidates", None) or []
+    if candidates:
+        finish = getattr(candidates[0], "finish_reason", None)
+    logger.info(
+        "[%s] gemini %s — prompt_tokens=%s output_tokens=%s total=%s finish=%s",
+        request_id,
+        attempt,
+        prompt_tok,
+        out_tok,
+        total,
+        finish,
+    )
+
+
 async def extract_candidate(
     text: str,
     model_cls: type[BaseModel],
     profile_summary: str,
     settings: Settings,
+    request_id: str = "-",
 ) -> BaseModel:
     """Run Gemini structured-output extraction. Retry once on validation error."""
 
@@ -82,19 +106,44 @@ async def extract_candidate(
     )
 
     user_content = f"<resume>\n{text}\n</resume>"
+    logger.info(
+        "[%s] gemini request — model=%s, resume_chars=%d, system_chars=%d, schema=%s",
+        request_id,
+        settings.gemini_model,
+        len(text),
+        len(system_instruction),
+        model_cls.__name__,
+    )
 
-    async def _call(contents: Any) -> Any:
+    async def _call(contents: Any, attempt: str) -> Any:
+        t0 = time.perf_counter()
         try:
-            return await client.aio.models.generate_content(
+            response = await client.aio.models.generate_content(
                 model=settings.gemini_model,
                 contents=contents,
                 config=config,
             )
         except Exception as e:
+            logger.error(
+                "[%s] gemini %s failed after %.2fs — %s: %s",
+                request_id,
+                attempt,
+                time.perf_counter() - t0,
+                type(e).__name__,
+                e,
+            )
             raise ExtractionFailed(
                 "Gemini API call failed.",
                 provider_error=f"{type(e).__name__}: {e}",
             ) from e
+        logger.info(
+            "[%s] gemini %s ok — %.2fs",
+            request_id,
+            attempt,
+            time.perf_counter() - t0,
+        )
+        _log_usage(request_id, attempt, response)
+        return response
 
     def _parse(response: Any) -> BaseModel:
         parsed = getattr(response, "parsed", None)
@@ -108,11 +157,17 @@ async def extract_candidate(
             )
         return model_cls.model_validate_json(json_text)
 
-    response = await _call(user_content)
+    response = await _call(user_content, "attempt-1")
     try:
-        return _parse(response)
+        result = _parse(response)
+        logger.info("[%s] gemini attempt-1 parsed cleanly", request_id)
+        return result
     except (ValidationError, ValueError) as first_error:
-        logger.warning("First extraction attempt failed validation: %s", first_error)
+        logger.warning(
+            "[%s] gemini attempt-1 failed validation, retrying — %s",
+            request_id,
+            first_error,
+        )
 
         retry_contents = [
             {"role": "user", "parts": [{"text": user_content}]},
@@ -135,10 +190,17 @@ async def extract_candidate(
                 ],
             },
         ]
-        retry_response = await _call(retry_contents)
+        retry_response = await _call(retry_contents, "attempt-2")
         try:
-            return _parse(retry_response)
+            result = _parse(retry_response)
+            logger.info("[%s] gemini attempt-2 parsed cleanly", request_id)
+            return result
         except (ValidationError, ValueError) as second_error:
+            logger.error(
+                "[%s] gemini attempt-2 also failed validation — %s",
+                request_id,
+                second_error,
+            )
             raise ExtractionFailed(
                 "Model output failed schema validation after retry.",
                 provider_error=str(second_error),
