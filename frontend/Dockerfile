@@ -3,7 +3,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Install deps based on package manifest first for cache efficiency.
-COPY package.json ./
+COPY package.json package-lock.json* ./
 RUN npm install
 
 COPY . .

@@ -1,0 +1,22 @@
+[project]
+name = "shortlist-agent"
+version = "0.1.0"
+description = "Service for shortlisting candidates against job descriptions using Qdrant."
+authors = [{ name = "Gemini CLI" }]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "qdrant-client",
+    "pydantic",
+    "pydantic-settings",
+    "sentence-transformers",
+    "numpy",
+    "httpx"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["app"]

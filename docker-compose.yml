@@ -44,3 +44,29 @@ services:
       backend:
         condition: service_started
     restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: parser-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_storage:/qdrant/storage:z
+    restart: unless-stopped
+
+  shortlist-agent:
+    build:
+      context: ./shortlist_agent
+    container_name: shortlist-agent
+    ports:
+      - "8001:8001"
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      LOG_LEVEL: INFO
+    volumes:
+      - ./shortlist_agent/app:/app/app
+      - ./shortlist_agent/main.py:/app/main.py
+    depends_on:
+      - qdrant
+    restart: unless-stopped

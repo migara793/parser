@@ -1,14 +1,20 @@
 # Hi there! 👋 I'm Migara
 
+
+
+no
+
+
 <div align="center">
 
-### AI Engineer & Cloud Enthusiast
+
 
 </div>
 
 ---
 
 ## 💻 Languages Used
+
 
 ### Python
 <div style="background: linear-gradient(to right, #3776ab 0%, #3776ab 45%, #f0f0f0 45%, #f0f0f0 100%); height: 30px; border-radius: 5px; display: flex; align-items: center; padding: 0 10px; color: white; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">

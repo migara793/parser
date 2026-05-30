@@ -15,6 +15,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/shortlist": {
+        target: "http://shortlist-agent:8001",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/shortlist/, ""),
+      },
     },
     watch: {
       usePolling: true,
