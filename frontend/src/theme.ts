@@ -8,9 +8,9 @@ export function createAppTheme(mode: PaletteMode) {
     palette: {
       mode,
       primary: {
-        main: "#6366f1",
-        light: "#818cf8",
-        dark: "#4f46e5",
+        main: "#10b981",
+        light: "#34d399",
+        dark: "#059669",
         contrastText: "#ffffff",
       },
       secondary: {
