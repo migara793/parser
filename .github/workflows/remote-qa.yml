@@ -1,0 +1,27 @@
+name: Trigger Remote QA Swarm
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  notify-swarm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Autonomous QA
+        run: |
+          curl -X POST https://outdoor-warrior-growth-packs.trycloudflare.com/webhook/github \
+          -H "Content-Type: application/json" \
+          -d '{
+            "repository": {
+              "full_name": "${{ github.repository }}",
+              "clone_url": "https://github.com/${{ github.repository }}.git"
+            },
+            "after": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "pusher": {
+              "name": "${{ github.actor }}"
+            }
+          }'
