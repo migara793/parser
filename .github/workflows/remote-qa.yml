@@ -23,5 +23,6 @@ jobs:
             "ref": "${{ github.ref }}",
             "pusher": {
               "name": "${{ github.actor }}"
+              
             }
           }'
