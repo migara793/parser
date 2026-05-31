@@ -127,7 +127,7 @@ export function CustomFieldEditor() {
             <button
               type="button"
               onClick={() => removeCustomField(cf.key)}
-              className="self-start rounded-xl p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"
+              className="self-start rounded-xl p-2 text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-rose-950/30"
               aria-label="Remove custom field"
             >
               <Trash2 className="h-4 w-4" />
@@ -193,11 +193,11 @@ export function CustomFieldEditor() {
               ml: "auto",
               borderRadius: 999,
               fontWeight: 700,
-              background: "linear-gradient(90deg, #f97316 0%, #16a34a 100%)",
+              background: "linear-gradient(90deg, #6366f1 0%, #16a34a 100%)",
               color: "#fff",
               boxShadow: "none",
               "&:hover": {
-                background: "linear-gradient(90deg, #ea580c 0%, #15803d 100%)",
+                background: "linear-gradient(90deg, #4f46e5 0%, #15803d 100%)",
                 boxShadow: "none",
               },
             }}
