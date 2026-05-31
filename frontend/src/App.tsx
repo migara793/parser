@@ -94,7 +94,7 @@ export default function App() {
           <header className="mb-5 rounded-[28px] border border-white/70 bg-white/75 p-4 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-colors duration-300 dark:border-slate-700/60 dark:bg-slate-900/75 dark:shadow-[0_30px_90px_rgba(2,6,23,0.45)] sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-start gap-3 sm:items-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-500 text-white shadow-lg shadow-emerald-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-emerald-500 text-white shadow-lg shadow-amber-500/20">
                   <ScanSearch className="h-6 w-6" />
                 </div>
                 <div>
