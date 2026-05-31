@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Trigger Autonomous QA
         run: |
-          curl -X POST https://unknown-opera-motel-biblical.trycloudflare.com/webhook/github\
+          curl -X POST https://seeds-resource-qui-analyses.trycloudflare.com/webhook/github\
           -H "Content-Type: application/json" \
           -d '{
             "repository": {
