@@ -49,7 +49,7 @@ export function ResumeDropzone({ file, onFile, maxMb = 10 }: Props) {
         <button
           type="button"
           onClick={() => onFile(null)}
-          className="rounded-lg p-2 text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-950/30"
+          className="rounded-lg p-2 text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-950/30"
           aria-label="Remove file"
         >
           <X className="h-4 w-4" />
@@ -65,7 +65,7 @@ export function ResumeDropzone({ file, onFile, maxMb = 10 }: Props) {
         className={
           "flex cursor-pointer flex-col items-center justify-center rounded-[24px] border-2 border-dashed p-6 text-center transition-all duration-200 " +
           (isDragActive
-            ? "border-brand-500 bg-brand-50/70 shadow-[0_18px_40px_rgba(99,102,241,0.12)] dark:border-brand-400 dark:bg-brand-950/40"
+            ? "border-brand-500 bg-brand-50/70 shadow-[0_18px_40px_rgba(16,185,129,0.12)] dark:border-brand-400 dark:bg-brand-950/40"
             : "border-slate-200 bg-gradient-to-b from-white to-brand-50/30 hover:border-brand-400 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)] dark:border-slate-700 dark:from-slate-950/60 dark:to-brand-950/20 dark:hover:border-brand-400")
         }
       >

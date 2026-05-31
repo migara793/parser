@@ -116,7 +116,7 @@ export function ConfigurePage({ onResult }: Props) {
         {errorMsg && (
           <Paper
             elevation={0}
-            className="rounded-2xl border border-indigo-200 bg-indigo-50/80 px-4 py-3 text-sm text-indigo-700"
+            className="rounded-2xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm text-emerald-700"
           >
             {errorMsg}
           </Paper>
@@ -140,7 +140,7 @@ export function ConfigurePage({ onResult }: Props) {
                 Ready to go
               </Typography>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-500 text-white shadow-lg shadow-indigo-500/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-500 text-white shadow-lg shadow-emerald-500/20">
               <WandSparkles className="h-5 w-5" />
             </div>
           </div>
