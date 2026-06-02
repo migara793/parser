@@ -74,7 +74,7 @@ export const ShortlistLeaderboard = ({ job_id }: { job_id: string }) => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <Avatar sx={{ bgcolor: i === 0 ? '#6366f1' : '#6366f1' }}>
+                    <Avatar sx={{ bgcolor: i === 0 ? '#f97316' : '#6366f1' }}>
                       <User className="h-4 w-4" />
                     </Avatar>
                     <div>
