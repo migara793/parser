@@ -100,11 +100,11 @@ export function ProfilePresets() {
             borderRadius: 999,
             fontWeight: 700,
             bgcolor: isDark ? "rgba(15, 23, 42, 0.95)" : "#ffffff",
-            color: isDark ? "#e2e8f0" : "#4d7c0f",
-            borderColor: isDark ? "#334155" : "#ecfccb",
+            color: isDark ? "#e2e8f0" : "#0f766e",
+            borderColor: isDark ? "#334155" : "#ccfbf1",
             "&:hover": {
-              bgcolor: isDark ? "#0f172a" : "#f7fee7",
-              borderColor: isDark ? "#475569" : "#a3e635",
+              bgcolor: isDark ? "#0f172a" : "#f0fdfa",
+              borderColor: isDark ? "#475569" : "#2dd4bf",
             },
           }}
         >

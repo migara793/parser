@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Trigger Autonomous QA
         run: |
-          curl -X POST    https://compression-launches-trailers-probe.trycloudflare.com/webhook/github \
+          curl -X POST    https://separate-flower-hospital-associate.trycloudflare.com/webhook/github \
           -H "Content-Type: application/json" \
           -d '{
             "repository": {
