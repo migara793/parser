@@ -34,7 +34,7 @@ export async function parseResume(
   } catch (e) {
     const err = e as AxiosError<ApiError>;
     const msg =
-      err.response?.data?.data?.message ??
+      err.response?.data?.error?.message ??
       err.message ??
       "Unknown error while parsing resume.";
     throw new Error(msg);

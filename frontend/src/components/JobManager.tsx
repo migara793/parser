@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Button, TextField, Typography, Paper, Grid, Chip, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction, Divider, CircularProgress } from "@mui/material";
+import { Box, Button, TextField, Typography, Paper, Grid, Chip, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemSecondaryAction, Divider, CircularProgress } from "@mui/material";
 import { Plus, Trash2, Briefcase, CheckCircle2 } from "lucide-react";
 import { createJob, fetchJobs, JobDescription, HRRules } from "../api/client";
 
@@ -150,8 +150,7 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
             <List className="max-h-[500px] overflow-auto">
               {jobs.map((job) => (
                 <Box key={job.job_id}>
-                  <ListItem 
-                    button 
+                  <ListItemButton 
                     onClick={() => onJobCreated(job.job_id)}
                     selected={selectedJobId === job.job_id}
                     className={`rounded-xl mb-2 transition-colors ${selectedJobId === job.job_id ? '!bg-brand-500/10' : ''}`}
@@ -169,7 +168,7 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
                         <CheckCircle2 className="h-5 w-5 text-brand-500 mr-2" />
                       </ListItemSecondaryAction>
                     )}
-                  </ListItem>
+                  </ListItemButton>
                 </Box>
               ))}
               {jobs.length === 0 && (

@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Trigger Autonomous QA
         run: |
-          curl -X POST   https://holdem-hindu-unlock-piano.trycloudflare.com/webhook/github \
+          curl -X POST    https://tied-intermediate-issued-zinc.trycloudflare.com/webhook/github \
           -H "Content-Type: application/json" \
           -d '{
             "repository": {
