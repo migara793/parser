@@ -11,7 +11,7 @@ body,
 }
 
 html {
-  --app-page-bg: #fdf4ff;
+  --app-page-bg: #f7fee7;
   --app-page-fg: #0f172a;
   background: var(--app-page-bg);
   scroll-behavior: smooth;
@@ -19,7 +19,7 @@ html {
 
 html.dark {
   --app-page-bg: #020617;
-  --app-page-fg: #fdf4ff;
+  --app-page-fg: #f7fee7;
 }
 
 body {
@@ -39,7 +39,7 @@ body {
 }
 
 ::selection {
-  background: rgba(217, 70, 239, 0.2);
+  background: rgba(132, 204, 22, 0.2);
   color: #0f172a;
 }
 
