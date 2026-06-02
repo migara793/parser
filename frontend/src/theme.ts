@@ -8,15 +8,15 @@ export function createAppTheme(mode: PaletteMode) {
     palette: {
       mode,
       primary: {
-        main: "#f43f5e",
-        light: "#fb7185",
-        dark: "#e11d48",
+        main: "#06b6d4",
+        light: "#22d3ee",
+        dark: "#0891b2",
         contrastText: "#ffffff",
       },
       secondary: {
-        main: "#f43f5e",
-        light: "#fb7185",
-        dark: "#e11d48",
+        main: "#06b6d4",
+        light: "#22d3ee",
+        dark: "#0891b2",
         contrastText: "#ffffff",
       },
       background: {
@@ -55,8 +55,8 @@ export function createAppTheme(mode: PaletteMode) {
         styleOverrides: {
           body: {
             background: isDark
-              ? "radial-gradient(circle at top left, rgba(244, 63, 94, 0.15), transparent 28%), radial-gradient(circle at top right, rgba(244, 63, 94, 0.12), transparent 24%), linear-gradient(180deg, #020617 0%, #0f172a 44%, #111827 100%)"
-              : "radial-gradient(circle at top left, rgba(244, 63, 94, 0.12), transparent 28%), radial-gradient(circle at top right, rgba(244, 63, 94, 0.14), transparent 24%), linear-gradient(180deg, #f8fafc 0%, #f1f5f9 36%, #ffffff 100%)",
+              ? "radial-gradient(circle at top left, rgba(6, 182, 212, 0.15), transparent 28%), radial-gradient(circle at top right, rgba(6, 182, 212, 0.12), transparent 24%), linear-gradient(180deg, #020617 0%, #0f172a 44%, #111827 100%)"
+              : "radial-gradient(circle at top left, rgba(6, 182, 212, 0.12), transparent 28%), radial-gradient(circle at top right, rgba(6, 182, 212, 0.14), transparent 24%), linear-gradient(180deg, #f8fafc 0%, #f1f5f9 36%, #ffffff 100%)",
             color: isDark ? "#f8fafc" : "#0f172a",
             transition: "background 220ms ease, color 220ms ease",
           },
