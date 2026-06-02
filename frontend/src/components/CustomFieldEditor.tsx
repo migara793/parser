@@ -193,11 +193,11 @@ export function CustomFieldEditor() {
               ml: "auto",
               borderRadius: 999,
               fontWeight: 700,
-              background: "linear-gradient(90deg, #06b6d4 0%, #16a34a 100%)",
+              background: "linear-gradient(90deg, #6366f1 0%, #16a34a 100%)",
               color: "#fff",
               boxShadow: "none",
               "&:hover": {
-                background: "linear-gradient(90deg, #0891b2 0%, #15803d 100%)",
+                background: "linear-gradient(90deg, #4f46e5 0%, #15803d 100%)",
                 boxShadow: "none",
               },
             }}
