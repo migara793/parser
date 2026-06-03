@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Trigger Autonomous QA
         run: |
-          curl -X POST        https://motorola-drama-plc-pork.trycloudflare.com/webhook/github \
+          curl -X POST      https://margaret-emission-per-issues.trycloudflare.com/webhook/github \
           -H "Content-Type: application/json" \
           -d '{
             "repository": {
