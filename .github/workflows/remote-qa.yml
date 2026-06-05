@@ -12,10 +12,11 @@ jobs:
     steps:
       - name: Trigger Autonomous QA
         run: |
-          curl -X POST       https://vehicle-house-ping-relocation.trycloudflare.com/webhook/github \
+          curl -X POST        https://love-setup-liberty-respectively.trycloudflare.com/webhook/github \
           -H "Content-Type: application/json" \
           -d '{
             "repository": {
+            
               "full_name": "${{ github.repository }}",
               "clone_url": "https://github.com/${{ github.repository }}.git"
             },
