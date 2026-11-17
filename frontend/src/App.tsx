@@ -86,15 +86,15 @@ export default function App() {
       <Box className="relative min-h-screen overflow-hidden transition-colors duration-300">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute left-[-8rem] top-[-8rem] h-[20rem] w-[20rem] rounded-full bg-brand-500/15 blur-3xl dark:bg-brand-500/20" />
-          <div className="absolute right-[-6rem] top[6rem] h-[18rem] w-[18rem] rounded-full bg-emerald-500/15 blur-3xl dark:bg-emerald-500/18" />
-          <div className="absolute bottom-[-6rem] left-1/2 h-[16rem] w-[16rem] -translate-x-1/2 rounded-full bg-amber-200/20 blur-3xl dark:bg-amber-400/10" />
+          <div className="absolute right-[-6rem] top[6rem] h-[18rem] w-[18rem] rounded-full bg-cyan-500/15 blur-3xl dark:bg-cyan-500/18" />
+          <div className="absolute bottom-[-6rem] left-1/2 h-[16rem] w-[16rem] -translate-x-1/2 rounded-full bg-blue-200/20 blur-3xl dark:bg-blue-400/10" />
         </div>
 
         <Container maxWidth="xl" className="relative z-10 py-4 sm:py-6 lg:py-8">
           <header className="mb-5 rounded-[28px] border border-white/70 bg-white/75 p-4 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-colors duration-300 dark:border-slate-700/60 dark:bg-slate-900/75 dark:shadow-[0_30px_90px_rgba(2,6,23,0.45)] sm:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-start gap-3 sm:items-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-emerald-500 text-white shadow-lg shadow-amber-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/20">
                   <ScanSearch className="h-6 w-6" />
                 </div>
                 <div>
@@ -111,7 +111,7 @@ export default function App() {
                       label="RAG Powered"
                       color="success"
                       variant="filled"
-                      className="!bg-emerald-500 !text-white"
+                      className="!bg-cyan-500 !text-white"
                     />
                   </div>
                   <Typography
@@ -179,7 +179,11 @@ export default function App() {
               <BulkShortlist job_id={selectedJobId} />
             )}
             {tab === "configure" && (
-              <ConfigurePage onResult={() => setTab("result")} />
+              <ConfigurePage
+                selectedJobId={selectedJobId}
+                onEvaluation={setEvaluation}
+                onResult={() => setTab("result")}
+              />
             )}
             {tab === "result" && (
               <Box>

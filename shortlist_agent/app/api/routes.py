@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from app.schemas import JobDescription, EvaluationRequest, EvaluationResponse, Candidate, ShortlistResponse, ShortlistResult
+from app.schemas import HRRules, JobDescription, EvaluationRequest, EvaluationResponse, Candidate, ShortlistResponse, ShortlistResult
 from app.config import get_settings
 from app.services.qdrant_service import QdrantService
 from app.services.scoring_service import ScoringService
@@ -12,11 +12,22 @@ qdrant = QdrantService()
 
 def get_candidate_text(data: dict) -> str:
     text = f"{data.get('headline', '')} {data.get('summary', '')}"
+    contact = data.get("contact", {}) or {}
+    text += f" {contact.get('location', '')}"
     for exp in data.get('experience', []):
         text += f" {exp.get('title', '')} {exp.get('company', '')} {' '.join(exp.get('bullets', []))}"
     for skill in data.get('skills', []):
-        text += f" {skill}"
+        text += f" {skill.get('name', '') if isinstance(skill, dict) else skill}"
+    for project in data.get("projects", []):
+        text += f" {project.get('name', '')} {project.get('description', '')} {' '.join(project.get('tech', []))}"
     return text
+
+
+def _cosine_similarity(left: list[float], right: list[float]) -> float:
+    left_vector = np.asarray(left, dtype=float)
+    right_vector = np.asarray(right, dtype=float)
+    denominator = np.linalg.norm(left_vector) * np.linalg.norm(right_vector)
+    return float(np.dot(left_vector, right_vector) / denominator) if denominator else 0.0
 
 @app.get("/health")
 async def health():
@@ -60,7 +71,7 @@ async def evaluate_candidate(request: EvaluationRequest):
     candidate_vector = qdrant.model.encode(candidate_text)
     
     # Calculate cosine similarity
-    semantic_score = float(np.dot(job_vector, candidate_vector) / (np.linalg.norm(job_vector) * np.linalg.norm(candidate_vector)))
+    semantic_score = _cosine_similarity(job_vector, candidate_vector)
     
     breakdown = ScoringService.evaluate(
         candidate_data=request.candidate_data,
@@ -68,7 +79,12 @@ async def evaluate_candidate(request: EvaluationRequest):
         semantic_score=semantic_score
     )
     
-    status = "Shortlisted" if breakdown.total_score >= 0.7 else "Hold" if breakdown.total_score >= 0.5 else "Rejected"
+    rules = HRRules(**job_data.payload.get("rules", {}))
+    status = ScoringService.status_for(breakdown, rules)
+
+    reasoning = f"Candidate evaluated with a total score of {breakdown.total_score:.2f}."
+    if breakdown.hard_failures:
+        reasoning += " Hard requirements failed: " + "; ".join(breakdown.hard_failures) + "."
     
     if request.save_to_pool:
         candidate_id = str(uuid.uuid4())
@@ -83,7 +99,7 @@ async def evaluate_candidate(request: EvaluationRequest):
         candidate_name=request.candidate_data.get("full_name", "Unknown"),
         score=breakdown.total_score,
         breakdown=breakdown,
-        reasoning=f"Candidate evaluated with a total score of {breakdown.total_score:.2f}.",
+        reasoning=reasoning,
         status=status
     )
 
@@ -93,15 +109,33 @@ async def get_shortlist(job_id: str, limit: int = 10):
     if not job_data:
         raise HTTPException(status_code=404, detail="Job not found")
     
-    results = qdrant.search_candidates(job_data.vector, limit=limit)
+    results = []
+    for candidate in qdrant.list_candidates():
+        if not candidate.vector:
+            continue
+        breakdown = ScoringService.evaluate(
+            candidate_data=candidate.payload,
+            job_payload=job_data.payload,
+            semantic_score=_cosine_similarity(job_data.vector, candidate.vector),
+        )
+        if not breakdown.hard_requirements_met:
+            continue
+        results.append((candidate, breakdown))
+
+    results.sort(key=lambda item: item[1].total_score, reverse=True)
     
     shortlist = []
-    for res in results:
+    for res, breakdown in results[:limit]:
         shortlist.append(ShortlistResult(
             candidate_id=str(res.id),
             name=res.payload.get("full_name", "Unknown"),
-            score=float(res.score),
-            metadata=res.payload
+            score=breakdown.total_score,
+            metadata=res.payload,
+            status=ScoringService.status_for(
+                breakdown,
+                HRRules(**job_data.payload.get("rules", {})),
+            ),
+            breakdown=breakdown,
         ))
     
     return ShortlistResponse(job_id=job_id, candidates=shortlist)

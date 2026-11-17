@@ -49,7 +49,7 @@ export function ResumeDropzone({ file, onFile, maxMb = 10 }: Props) {
         <button
           type="button"
           onClick={() => onFile(null)}
-          className="rounded-lg p-2 text-slate-400 transition hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-950/30"
+          className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"
           aria-label="Remove file"
         >
           <X className="h-4 w-4" />
@@ -70,7 +70,7 @@ export function ResumeDropzone({ file, onFile, maxMb = 10 }: Props) {
         }
       >
         <input {...getInputProps()} />
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500/10 to-emerald-500/10 text-brand-600 dark:from-brand-500/20 dark:to-emerald-500/20 dark:text-brand-300">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500/10 to-cyan-500/10 text-brand-600 dark:from-brand-500/20 dark:to-cyan-500/20 dark:text-brand-300">
           <UploadCloud className="h-7 w-7" />
         </div>
         <div className="mt-3 text-sm font-semibold text-slate-900 dark:text-slate-100">

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     max_file_mb: int = Field(default=10, ge=1, le=100)
     log_level: str = Field(default="INFO")
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    shortlist_agent_url: str = Field(default="http://shortlist-agent:8001")
+    shortlist_timeout_seconds: float = Field(default=60.0, ge=1.0, le=300.0)
 
     @field_validator("cors_origins", mode="before")
     @classmethod

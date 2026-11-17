@@ -13,7 +13,7 @@ import {
   Avatar,
   CircularProgress
 } from "@mui/material";
-import { Trophy, User, ArrowUpRight } from "lucide-react";
+import { Trophy, User } from "lucide-react";
 import { fetchShortlist, ShortlistResult } from "../api/client";
 
 export const ShortlistLeaderboard = ({ job_id }: { job_id: string }) => {
@@ -47,7 +47,7 @@ export const ShortlistLeaderboard = ({ job_id }: { job_id: string }) => {
     <Paper className="p-6 rounded-3xl border border-slate-200 dark:border-slate-700 dark:bg-slate-900/50">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-500">
+          <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
             <Trophy className="h-6 w-6" />
           </div>
           <Typography variant="h5" className="!font-bold">Top 10 Candidates</Typography>
@@ -79,7 +79,7 @@ export const ShortlistLeaderboard = ({ job_id }: { job_id: string }) => {
                     </Avatar>
                     <div>
                       <Typography className="!font-bold">{c.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">{c.metadata.email || 'No email'}</Typography>
+                      <Typography variant="caption" color="text.secondary">{c.metadata.contact?.email || c.metadata.email || 'No email'}</Typography>
                     </div>
                   </div>
                 </TableCell>
@@ -92,18 +92,19 @@ export const ShortlistLeaderboard = ({ job_id }: { job_id: string }) => {
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {(c.metadata.skills || []).slice(0, 3).map((s: string) => (
-                      <Chip key={s} label={s} size="small" className="!text-[10px]" />
-                    ))}
+                    {(c.metadata.skills || []).slice(0, 3).map((s: any) => {
+                      const label = typeof s === "string" ? s : s.name;
+                      return <Chip key={label} label={label} size="small" className="!text-[10px]" />;
+                    })}
                     {(c.metadata.skills || []).length > 3 && (
                       <Typography variant="caption" color="text.secondary">+{c.metadata.skills.length - 3}</Typography>
                     )}
                   </div>
                 </TableCell>
                 <TableCell>
-                   <Chip 
-                    label={c.score > 0.7 ? "Top Match" : "Strong"} 
-                    color={c.score > 0.7 ? "success" : "primary"}
+                   <Chip
+                    label={c.status || (c.score > 0.7 ? "Shortlisted" : "Hold")}
+                    color={c.status === "Hold" || (!c.status && c.score <= 0.7) ? "primary" : "success"}
                     size="small"
                     className="!font-bold"
                   />

@@ -21,7 +21,7 @@ import {
   Play, 
   Loader2 
 } from "lucide-react";
-import { parseResume, evaluateCandidate } from "../api/client";
+import { parseAndShortlistResume } from "../api/client";
 import { useProfileStore } from "../store/profile";
 
 interface FileStatus {
@@ -54,18 +54,15 @@ export const BulkShortlist = ({ job_id }: { job_id: string }) => {
     for (let i = 0; i < updatedFiles.length; i++) {
       const item = updatedFiles[i];
       try {
-        // 1. Parsing
+        // One backend pipeline: parser -> shortlist agent.
         item.status = "parsing";
         setFiles([...updatedFiles]);
-        const parseRes = await parseResume(item.file, profile);
-
-        // 2. Shortlisting
         item.status = "shortlisting";
         setFiles([...updatedFiles]);
-        const evalRes = await evaluateCandidate(job_id, parseRes.candidate, true);
+        const pipeline = await parseAndShortlistResume(item.file, profile, job_id, true);
 
         item.status = "completed";
-        item.score = evalRes.score;
+        item.score = pipeline.evaluation.score;
       } catch (e: any) {
         item.status = "error";
         item.error = e.message || "Failed to process";
@@ -121,17 +118,17 @@ export const BulkShortlist = ({ job_id }: { job_id: string }) => {
 
           <List className="space-y-2">
             {files.map((item, idx) => (
-              <ListItem 
-                key={idx} 
+              <ListItem
+                key={idx}
                 className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/30"
               >
                 <ListItemIcon>
-                  {item.status === "completed" ? <CheckCircle2 className="text-emerald-500" /> : 
+                  {item.status === "completed" ? <CheckCircle2 className="text-cyan-500" /> :
                    item.status === "error" ? <XCircle className="text-rose-500" /> :
                    item.status === "pending" ? <FileText className="text-slate-400" /> :
                    <CircularProgress size={20} />}
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary={<Typography className="!font-bold">{item.file.name}</Typography>}
                   secondary={item.error || (item.status === "completed" ? `Match Score: ${(item.score! * 100).toFixed(0)}%` : item.status.toUpperCase())}
                 />

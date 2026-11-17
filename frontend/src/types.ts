@@ -70,5 +70,6 @@ export interface ParseResponse {
 }
 
 export interface ApiError {
-  error: { code: string; message: string };
+  error?: { code: string; message: string };
+  detail?: string;
 }

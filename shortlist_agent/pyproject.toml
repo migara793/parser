@@ -9,7 +9,8 @@ dependencies = [
     "qdrant-client",
     "pydantic",
     "pydantic-settings",
-    "sentence-transformers",
+    "sentence-transformers==3.3.1",
+    "transformers<5",
     "numpy",
     "httpx"
 ]

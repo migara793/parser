@@ -1,0 +1,14 @@
+# Temporary local recovery image: reuse the already downloaded CPU Torch layer
+# while replacing the incompatible latest Transformer packages.
+FROM parser-shortlist-agent
+
+WORKDIR /app
+COPY pyproject.toml .
+COPY app ./app
+
+RUN pip install --no-cache-dir --timeout 1000 --retries 10 \
+        "transformers==4.48.3" \
+        "tokenizers==0.21.4" \
+        "sentence-transformers==3.3.1"
+
+COPY . .

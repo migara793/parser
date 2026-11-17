@@ -41,6 +41,43 @@ export async function parseResume(
   }
 }
 
+export interface ParseAndShortlistResponse {
+  pipeline: {
+    status: string;
+    request_id: string;
+    job_id: string;
+  };
+  parse: ParseResponse;
+  evaluation: EvaluationResponse;
+}
+
+export async function parseAndShortlistResume(
+  file: File,
+  profile: ExtractionProfile,
+  job_id: string,
+  save_to_pool = true,
+): Promise<ParseAndShortlistResponse> {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("profile", JSON.stringify(profile));
+  fd.append("job_id", job_id);
+  fd.append("save_to_pool", String(save_to_pool));
+  try {
+    const r = await http.post<ParseAndShortlistResponse>("/parse-and-shortlist", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return r.data;
+  } catch (e) {
+    const err = e as AxiosError<ApiError>;
+    const msg =
+      err.response?.data?.error?.message ??
+      err.response?.data?.detail ??
+      err.message ??
+      "The resume pipeline failed.";
+    throw new Error(msg);
+  }
+}
+
 // Shortlist Agent API
 export const shortlistHttp = axios.create({ baseURL: "/shortlist", timeout: 30_000 });
 
@@ -50,6 +87,8 @@ export interface HRRules {
   preferred_skills: Record<string, number>;
   min_degree?: string;
   location_preference?: string;
+  shortlist_threshold: number;
+  hold_threshold: number;
 }
 
 export interface JobDescription {
@@ -70,6 +109,8 @@ export interface EvaluationResponse {
     skills_match: number;
     education_match: number;
     total_score: number;
+    hard_requirements_met?: boolean;
+    hard_failures?: string[];
   };
   reasoning: string;
   status: string;
@@ -80,6 +121,8 @@ export interface ShortlistResult {
   name: string;
   score: number;
   metadata: any;
+  status?: string;
+  breakdown?: EvaluationResponse["breakdown"];
 }
 
 export interface ShortlistResponse {

@@ -57,6 +57,15 @@ class QdrantService:
         )
         return results
 
+    def list_candidates(self, limit: int = 1000):
+        results, _ = self.client.scroll(
+            collection_name=self.candidate_collection,
+            limit=limit,
+            with_payload=True,
+            with_vectors=True,
+        )
+        return results
+
     def upsert_candidate(self, candidate_id: str, text: str, metadata: dict):
         vector = self.model.encode(text).tolist()
         self.client.upsert(

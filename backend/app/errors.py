@@ -51,6 +51,12 @@ class ExtractionFailed(ParserError):
     message = "The language model failed to produce a valid candidate record."
 
 
+class ShortlistServiceUnavailable(ParserError):
+    code = "shortlist_service_unavailable"
+    http_status = 502
+    message = "The shortlist service could not evaluate the candidate."
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(ParserError)
     async def _parser_error_handler(_request: Request, exc: ParserError) -> JSONResponse:

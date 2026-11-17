@@ -29,7 +29,7 @@ function PrettyValue({ value }: { value: unknown }) {
         className={
           "inline-flex rounded px-2 py-0.5 text-xs " +
           (value
-            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200"
+            ? "bg-cyan-50 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-200"
             : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")
         }
       >
@@ -228,7 +228,7 @@ export function ResultView({ result }: { result: ParseResponse }) {
               variant="contained"
               color="primary"
               startIcon={<Download className="h-4 w-4" />}
-              className="!bg-gradient-to-r !from-brand-500 !to-emerald-500 !font-bold"
+              className="!bg-gradient-to-r !from-brand-500 !to-cyan-500 !font-bold"
             >
               Download
             </Button>

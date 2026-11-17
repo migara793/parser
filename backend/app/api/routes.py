@@ -4,12 +4,13 @@ import logging
 import time
 import uuid
 
-from fastapi import FastAPI, File, Form, UploadFile
+import httpx
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.catalog import get_catalog
 from app.config import get_settings
-from app.errors import register_exception_handlers
+from app.errors import ShortlistServiceUnavailable, register_exception_handlers
 from app.profile import parse_profile
 from app.schema_builder import build_candidate_model, describe_profile_for_system_prompt
 from app.services.document_loader import load_elements, validate_upload
@@ -56,12 +57,7 @@ async def fields() -> list[dict]:
     return get_catalog()
 
 
-@app.post("/parse")
-async def parse(
-    file: UploadFile = File(...),
-    profile: str = Form(...),
-):
-    request_id = uuid.uuid4().hex[:8]
+async def _parse_resume(file: UploadFile, profile: str, request_id: str) -> dict:
     t0 = time.perf_counter()
     filename = file.filename or "<unnamed>"
     logger.info("[%s] /parse received — file=%s content_type=%s", request_id, filename, file.content_type)
@@ -149,4 +145,61 @@ async def parse(
             "custom_fields": [cf.key for cf in profile_obj.custom_fields],
             "request_id": request_id,
         },
+    }
+
+
+@app.post("/parse")
+async def parse(
+    file: UploadFile = File(...),
+    profile: str = Form(...),
+):
+    return await _parse_resume(file, profile, uuid.uuid4().hex[:8])
+
+
+@app.post("/parse-and-shortlist")
+async def parse_and_shortlist(
+    file: UploadFile = File(...),
+    profile: str = Form(...),
+    job_id: str = Form(...),
+    save_to_pool: bool = Form(True),
+):
+    """Run the cross-service resume pipeline.
+
+    The parser owns extraction. The shortlist agent owns job retrieval,
+    embeddings, rule evaluation, and persistence. This endpoint only
+    orchestrates the two services and returns their combined result.
+    """
+    request_id = uuid.uuid4().hex[:8]
+    parsed = await _parse_resume(file, profile, request_id)
+
+    payload = {
+        "job_id": job_id,
+        "candidate_data": parsed["candidate"],
+        "save_to_pool": save_to_pool,
+    }
+
+    try:
+        async with httpx.AsyncClient(
+            base_url=settings.shortlist_agent_url,
+            timeout=settings.shortlist_timeout_seconds,
+        ) as client:
+            response = await client.post("/evaluate", json=payload)
+    except httpx.HTTPError as exc:
+        logger.exception("[%s] shortlist service request failed", request_id)
+        raise ShortlistServiceUnavailable(
+            provider_error=f"{type(exc).__name__}: {exc}"
+        ) from exc
+
+    if response.status_code >= 400:
+        detail = response.json().get("detail", "Shortlist evaluation failed.")
+        raise HTTPException(status_code=response.status_code, detail=detail)
+
+    return {
+        "pipeline": {
+            "status": "completed",
+            "request_id": request_id,
+            "job_id": job_id,
+        },
+        "parse": parsed,
+        "evaluation": response.json(),
     }

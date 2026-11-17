@@ -89,7 +89,13 @@ async def extract_candidate(
     if not api_key:
         raise ExtractionFailed("GOOGLE_API_KEY is not configured.")
 
-    client = genai.Client(api_key=api_key)
+    # `system_instruction` is sent as a developer instruction by the SDK.
+    # The Gemini Developer API currently requires the beta endpoint for this
+    # request shape; the default endpoint can otherwise return HTTP 400.
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(api_version="v1beta"),
+    )
 
     system_instruction = (
         SYSTEM_PROMPT_BASE

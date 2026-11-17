@@ -44,6 +44,23 @@ The compose file mounts source code as volumes, so:
 
 Stop with `Ctrl+C`, then `docker compose down` to remove containers.
 
+## Run on a local Kubernetes cluster with Minikube
+
+The same four-service stack can run on Minikube. The deployment files and the
+full command sequence are in [k8s/KUBERNETES.md](k8s/KUBERNETES.md). In brief:
+
+```sh
+minikube image build -t resume-parser-backend:local ./backend
+minikube image build -t shortlist-agent:local ./shortlist_agent
+minikube image build -t resume-parser-frontend:local ./frontend
+minikube kubectl -- apply -f k8s/namespace.yaml -f k8s/app.yaml
+minikube service frontend -n resume-parser --url
+```
+
+Create the `parser-backend-secret` first as described in the Kubernetes guide.
+The shortlist agent loads a sentence-transformer model, so give Minikube at
+least 4 GiB of memory if possible.
+
 > Note: the backend image installs `libreoffice`, `tesseract`, and `poppler`
 > for `unstructured`'s document support, so the first build is several
 > hundred MB and takes a few minutes.
@@ -107,6 +124,22 @@ The dev server proxies `/api/*` → `http://localhost:8000/*`.
 5. That model is passed to Gemini as `response_schema`, and Gemini returns a
    typed JSON object that's validated and returned to the UI.
 
+## Resume-to-shortlist pipeline
+
+When a job is selected, the UI sends the resume to the parser's
+`POST /parse-and-shortlist` endpoint. The parser extracts the structured
+candidate with Gemini, then calls the shortlist agent's `POST /evaluate`
+endpoint over the internal Docker network. The shortlist agent compares the
+candidate with the job embedding in Qdrant and applies the configured HR rules.
+
+The response contains both `parse` and `evaluation` results. Extraction-only
+clients can continue using `POST /parse`, while clients that already have
+structured candidate data can call the shortlist agent directly.
+
+HR rules are configured per job in the UI: required skills, weighted preferred
+skills, minimum experience, degree, location, and the score thresholds for
+`Shortlisted` and `Hold`. Required rules are enforced as hard filters.
+
 ## Environment
 
 `backend/.env`:
@@ -117,6 +150,8 @@ GEMINI_MODEL=gemini-2.5-pro
 MAX_FILE_MB=10
 LOG_LEVEL=INFO
 CORS_ORIGINS=http://localhost:5173
+SHORTLIST_AGENT_URL=http://shortlist-agent:8001
+SHORTLIST_TIMEOUT_SECONDS=60
 ```
 
 `frontend/.env`:

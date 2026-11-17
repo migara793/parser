@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 class HRRules(BaseModel):
     min_years_experience: Optional[float] = Field(None, description="Minimum total years of experience required.")
@@ -9,6 +9,14 @@ class HRRules(BaseModel):
     preferred_skills: Dict[str, int] = Field(default_factory=dict, description="Skills with weights (1-10) for scoring.")
     min_degree: Optional[str] = Field(None, description="Minimum education level (e.g., 'B.Sc.').")
     location_preference: Optional[str] = Field(None, description="Preferred location or 'Remote'.")
+    shortlist_threshold: float = Field(0.7, ge=0, le=1, description="Minimum score for Shortlisted status.")
+    hold_threshold: float = Field(0.5, ge=0, le=1, description="Minimum score for Hold status.")
+
+    @model_validator(mode="after")
+    def validate_thresholds(self):
+        if self.hold_threshold > self.shortlist_threshold:
+            raise ValueError("hold_threshold must be less than or equal to shortlist_threshold")
+        return self
 
 class JobDescription(BaseModel):
     title: str
@@ -31,6 +39,8 @@ class ScoreBreakdown(BaseModel):
     skills_match: float
     education_match: float
     total_score: float
+    hard_requirements_met: bool = True
+    hard_failures: List[str] = Field(default_factory=list)
 
 class EvaluationResponse(BaseModel):
     job_id: str
@@ -45,6 +55,8 @@ class ShortlistResult(BaseModel):
     name: str
     score: float
     metadata: Dict[str, Any]
+    status: str = "Shortlisted"
+    breakdown: ScoreBreakdown | None = None
 
 class ShortlistResponse(BaseModel):
     job_id: str

@@ -48,8 +48,11 @@ class _FakeClient:
 
 
 def _patch_genai(monkeypatch, fake_models):
-    fake_genai = SimpleNamespace(Client=lambda api_key: _FakeClient(fake_models))
+    fake_genai = SimpleNamespace(
+        Client=lambda api_key, **kwargs: _FakeClient(fake_models)
+    )
     fake_types = SimpleNamespace(GenerateContentConfig=lambda **kw: kw)
+    fake_types.HttpOptions = lambda **kw: kw
     monkeypatch.setattr("google.genai", fake_genai, raising=False)
     monkeypatch.setattr("google.genai.types", fake_types, raising=False)
 
@@ -117,9 +120,10 @@ async def test_extract_candidate_wraps_provider_exceptions(monkeypatch):
             raise RuntimeError("rate limited")
 
     fake_genai = SimpleNamespace(
-        Client=lambda api_key: SimpleNamespace(aio=SimpleNamespace(models=_Boom()))
+        Client=lambda api_key, **kwargs: SimpleNamespace(aio=SimpleNamespace(models=_Boom()))
     )
     fake_types = SimpleNamespace(GenerateContentConfig=lambda **kw: kw)
+    fake_types.HttpOptions = lambda **kw: kw
     monkeypatch.setattr("google.genai", fake_genai, raising=False)
     monkeypatch.setattr("google.genai.types", fake_types, raising=False)
 

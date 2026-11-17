@@ -3,7 +3,9 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=1000 \
+    PIP_RETRIES=10
 
 # System dependencies for `unstructured[all-docs]`:
 #   poppler-utils  → PDF parsing
@@ -11,8 +13,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 #   libreoffice    → DOC/DOCX/RTF conversion
 #   libmagic1      → file type detection
 #   libgl1, libglib2.0-0 → image stack
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get -o Acquire::Retries=5 update \
+    && apt-get -o Acquire::Retries=5 install -y --no-install-recommends \
         poppler-utils \
         tesseract-ocr \
         tesseract-ocr-eng \
@@ -29,7 +32,7 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY app ./app
 RUN pip install --upgrade pip \
-    && pip install -e ".[dev]"
+    && pip install --timeout 1000 --retries 10 -e ".[dev]"
 
 COPY . .
 

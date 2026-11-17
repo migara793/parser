@@ -9,7 +9,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { fetchCatalog, parseResume } from "../api/client";
+import {
+  EvaluationResponse,
+  fetchCatalog,
+  parseAndShortlistResume,
+  parseResume,
+} from "../api/client";
 import { CustomFieldEditor } from "../components/CustomFieldEditor";
 import { FieldPicker } from "../components/FieldPicker";
 import { ProfilePresets } from "../components/ProfilePresets";
@@ -19,9 +24,11 @@ import { useResultStore } from "../store/result";
 
 interface Props {
   onResult: () => void;
+  selectedJobId?: string | null;
+  onEvaluation?: (evaluation: EvaluationResponse) => void;
 }
 
-export function ConfigurePage({ onResult }: Props) {
+export function ConfigurePage({ selectedJobId, onEvaluation, onResult }: Props) {
   const profile = useProfileStore((s) => s.profile);
   const loadFromCatalog = useProfileStore((s) => s.loadFromCatalog);
   const setResult = useResultStore((s) => s.setResult);
@@ -36,9 +43,21 @@ export function ConfigurePage({ onResult }: Props) {
   }, [catalogQ.data, loadFromCatalog]);
 
   const parseM = useMutation({
-    mutationFn: () => parseResume(file!, profile),
-    onSuccess: (data) => {
-      setResult(data);
+    mutationFn: async () => {
+      if (selectedJobId) {
+        const pipeline = await parseAndShortlistResume(
+          file!,
+          profile,
+          selectedJobId,
+          true,
+        );
+        return { parse: pipeline.parse, evaluation: pipeline.evaluation };
+      }
+      return { parse: await parseResume(file!, profile), evaluation: null };
+    },
+    onSuccess: ({ parse, evaluation }) => {
+      setResult(parse);
+      if (evaluation) onEvaluation?.(evaluation);
       onResult();
     },
     onError: (e: Error) => setErrorMsg(e.message),
@@ -116,7 +135,7 @@ export function ConfigurePage({ onResult }: Props) {
         {errorMsg && (
           <Paper
             elevation={0}
-            className="rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-700"
+            className="rounded-2xl border border-blue-200 bg-blue-50/80 px-4 py-3 text-sm text-blue-700"
           >
             {errorMsg}
           </Paper>
@@ -140,7 +159,7 @@ export function ConfigurePage({ onResult }: Props) {
                 Ready to go
               </Typography>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-500 text-white shadow-lg shadow-amber-500/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-500 to-cyan-500 text-white shadow-lg shadow-blue-500/20">
               <WandSparkles className="h-5 w-5" />
             </div>
           </div>
@@ -204,12 +223,18 @@ export function ConfigurePage({ onResult }: Props) {
                     <Sparkles className="h-4 w-4" />
                   )
                 }
-                className="!bg-gradient-to-r !from-brand-500 !to-emerald-500 !py-3 !text-base !font-bold"
+                className="!bg-gradient-to-r !from-brand-500 !to-cyan-500 !py-3 !text-base !font-bold"
                 fullWidth
               >
-                {parseM.isPending ? "Extracting…" : "Parse resume"}
+                {parseM.isPending
+                  ? selectedJobId
+                    ? "Parsing & shortlisting…"
+                    : "Extracting…"
+                  : selectedJobId
+                    ? "Parse & shortlist"
+                    : "Parse resume"}
               </Button>
-              <div className="rounded-2xl border border-emerald-100 bg-amber-50/80 px-4 py-3 text-sm text-emerald-800 transition-colors dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-amber-200">
+              <div className="rounded-2xl border border-cyan-100 bg-blue-50/80 px-4 py-3 text-sm text-cyan-800 transition-colors dark:border-cyan-900/50 dark:bg-cyan-950/40 dark:text-blue-200">
                 The action stays visible on desktop and the layout adapts on
                 smaller screens.
               </div>

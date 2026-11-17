@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Box, Button, TextField, Typography, Paper, Grid, Chip, IconButton, List, ListItem, ListItemButton, ListItemText, ListItemSecondaryAction, Divider, CircularProgress } from "@mui/material";
-import { Plus, Trash2, Briefcase, CheckCircle2 } from "lucide-react";
-import { createJob, fetchJobs, JobDescription, HRRules } from "../api/client";
+import { Box, Button, TextField, Typography, Paper, Grid, Chip, List, ListItemButton, ListItemText, ListItemSecondaryAction, CircularProgress } from "@mui/material";
+import { Plus, Briefcase, CheckCircle2 } from "lucide-react";
+import { createJob, fetchJobs, JobDescription } from "../api/client";
 
 export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id: string) => void, selectedJobId: string | null }) => {
   const [title, setTitle] = useState("");
@@ -9,6 +9,13 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
   const [minExp, setMinExp] = useState<number>(0);
   const [requiredSkills, setRequiredSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState("");
+  const [preferredSkills, setPreferredSkills] = useState<Record<string, number>>({});
+  const [preferredSkill, setPreferredSkill] = useState("");
+  const [preferredWeight, setPreferredWeight] = useState(5);
+  const [minDegree, setMinDegree] = useState("");
+  const [locationPreference, setLocationPreference] = useState("");
+  const [shortlistThreshold, setShortlistThreshold] = useState(0.7);
+  const [holdThreshold, setHoldThreshold] = useState(0.5);
   const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState<JobDescription[]>([]);
   const [fetchingJobs, setFetchingJobs] = useState(false);
@@ -30,9 +37,18 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
   }, []);
 
   const handleAddSkill = () => {
-    if (newSkill && !requiredSkills.includes(newSkill)) {
-      setRequiredSkills([...requiredSkills, newSkill]);
+    const skill = newSkill.trim();
+    if (skill && !requiredSkills.some((existing) => existing.toLowerCase() === skill.toLowerCase())) {
+      setRequiredSkills([...requiredSkills, skill]);
       setNewSkill("");
+    }
+  };
+
+  const handleAddPreferredSkill = () => {
+    const skill = preferredSkill.trim();
+    if (skill) {
+      setPreferredSkills({ ...preferredSkills, [skill]: preferredWeight });
+      setPreferredSkill("");
     }
   };
 
@@ -45,8 +61,12 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
         rules: {
           min_years_experience: minExp,
           required_skills: requiredSkills,
-          preferred_skills: {},
-        }
+          preferred_skills: preferredSkills,
+          min_degree: minDegree.trim() || undefined,
+          location_preference: locationPreference.trim() || undefined,
+          shortlist_threshold: shortlistThreshold,
+          hold_threshold: holdThreshold,
+        },
       };
       const res = await createJob(job);
       onJobCreated(res.job_id);
@@ -101,6 +121,24 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
                 onChange={(e) => setMinExp(Number(e.target.value))}
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Minimum Degree"
+                value={minDegree}
+                onChange={(e) => setMinDegree(e.target.value)}
+                placeholder="e.g. B.Sc."
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Location Preference"
+                value={locationPreference}
+                onChange={(e) => setLocationPreference(e.target.value)}
+                placeholder="e.g. Colombo or Remote"
+              />
+            </Grid>
             <Grid item xs={12}>
               <Typography variant="subtitle2" className="mb-2">Required Skills</Typography>
               <div className="flex gap-2 mb-3">
@@ -120,12 +158,77 @@ export const JobManager = ({ onJobCreated, selectedJobId }: { onJobCreated: (id:
               </Box>
             </Grid>
             <Grid item xs={12}>
+              <Typography variant="subtitle2" className="mb-2">Preferred Skills and Weights</Typography>
+              <div className="flex flex-wrap gap-2 mb-3">
+                <TextField
+                  size="small"
+                  value={preferredSkill}
+                  onChange={(e) => setPreferredSkill(e.target.value)}
+                  placeholder="e.g. Docker"
+                  onKeyPress={(e) => e.key === "Enter" && handleAddPreferredSkill()}
+                />
+                <TextField
+                  size="small"
+                  type="number"
+                  label="Weight"
+                  value={preferredWeight}
+                  onChange={(e) => setPreferredWeight(Math.min(10, Math.max(1, Number(e.target.value))))}
+                  inputProps={{ min: 1, max: 10 }}
+                  sx={{ width: 110 }}
+                />
+                <Button variant="outlined" onClick={handleAddPreferredSkill} startIcon={<Plus />}>Add</Button>
+              </div>
+              <Box className="flex flex-wrap gap-2">
+                {Object.entries(preferredSkills).map(([skill, weight]) => (
+                  <Chip
+                    key={skill}
+                    label={`${skill} · ${weight}/10`}
+                    onDelete={() => {
+                      const next = { ...preferredSkills };
+                      delete next[skill];
+                      setPreferredSkills(next);
+                    }}
+                  />
+                ))}
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" className="mb-2">Score Thresholds</Typography>
+              <Typography variant="caption" color="text.secondary" className="block mb-2">
+                Scores are between 0 and 1. Hard rule failures are always rejected.
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    label="Shortlist threshold"
+                    value={shortlistThreshold}
+                    onChange={(e) => setShortlistThreshold(Number(e.target.value))}
+                    inputProps={{ min: 0, max: 1, step: 0.05 }}
+                    error={holdThreshold > shortlistThreshold}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    label="Hold threshold"
+                    value={holdThreshold}
+                    onChange={(e) => setHoldThreshold(Number(e.target.value))}
+                    inputProps={{ min: 0, max: 1, step: 0.05 }}
+                    error={holdThreshold > shortlistThreshold}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
               <Button
                 fullWidth
                 variant="contained"
                 size="large"
                 onClick={handleCreate}
-                disabled={loading || !title || !description}
+                disabled={loading || !title || !description || holdThreshold > shortlistThreshold}
                 className="!rounded-2xl !py-3 !bg-brand-500 hover:!bg-brand-600"
               >
                 {loading ? "Creating..." : "Save to Knowledge Base"}

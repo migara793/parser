@@ -15,8 +15,8 @@ export const ShortlistResults = ({ evaluation }: { evaluation: EvaluationRespons
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "Shortlisted": return <CheckCircle2 className="h-5 w-5 text-emerald-500" />;
-      case "Hold": return <AlertCircle className="h-5 w-5 text-amber-500" />;
+      case "Shortlisted": return <CheckCircle2 className="h-5 w-5 text-cyan-500" />;
+      case "Hold": return <AlertCircle className="h-5 w-5 text-blue-500" />;
       case "Rejected": return <XCircle className="h-5 w-5 text-rose-500" />;
       default: return null;
     }
